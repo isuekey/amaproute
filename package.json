@@ -1,0 +1,9 @@
+{
+  "name": "amap-route",
+  "version": "0.0.1",
+  "description": "使用高德地图预览路线",
+  "main": "index.js",
+  "repository": "https://github.com/isuekey/amaproute",
+  "author": "liu.hanru",
+  "license": "MIT"
+}
