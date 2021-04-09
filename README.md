@@ -34,8 +34,8 @@
   * amap 需要插件 AMap.DistrictSearch,AMap.Geolocation,AMap.Geocoder
 
 # 内部参数 #
-  * defaultLoadRule:(distance) =>{
+  * defaultLoadRule:(distance) => {
   }
-  * defaultUnloadRule:(distance) =>{
+  * defaultUnloadRule:(distance) => {
   }
   
