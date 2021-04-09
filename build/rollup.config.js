@@ -1,6 +1,6 @@
 
 import commonjs from "@rollup/plugin-commonjs";
-import vue from 'rollup-plugin-vue';
+import vuePlugin from 'rollup-plugin-vue';
 import buble from '@rollup/plugin-buble';
 
 export default {
@@ -10,11 +10,11 @@ export default {
     exports: 'named',
   },
   plugins:[
-    vue({
+    commonjs(),
+    vuePlugin({
       css:true,
       compileTemplate:true,
     }),
-    commonjs(),
     buble(),
   ],
 };

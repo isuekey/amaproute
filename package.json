@@ -2,10 +2,11 @@
   "name": "amap-route",
   "version": "0.0.1",
   "description": "使用高德地图预览路线",
-  "main": "dist/amap-route-vue.umd.js",
-  "module":"dist/amap-route-vue.esm.js",
-  "unpkg":"dist/amap-route-vue.min.js",
-  "browser":{
+  "main": "dist/amap-route.umd.js",
+  "module": "dist/amap-route.esm.js",
+  "unpkg": "dist/amap-route.min.js",
+  "types": "dist/amap-route.esm.js",
+  "browser": {
     "./sfc": "src/amap-route.vue"
   },
   "repository": "https://github.com/isuekey/amaproute",
@@ -13,19 +14,21 @@
   "license": "MIT",
   "scripts": {
     "build": "npm run build:umd & npm run build:es & npm run build:unpkg",
-    "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/amap-route-vue.umd.js",
-    "build:es": "rollup --config build/rollup.config.js --format es --file dist/amap-route-vue.esm.js",
-    "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/amap-route-vue.min.js",
+    "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/amap-route.umd.js",
+    "build:es": "rollup --config build/rollup.config.js --format es --file dist/amap-route.esm.js",
+    "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/amap-route.min.js",
     "tsc": "tsc"
   },
   "devDependencies": {
     "@rollup/plugin-buble": "^0.21.3",
-    "@rollup/plugin-commonjs": "^18.0.0",
-    "@vue/compiler-sfc": "^3.0.11",
-    "rollup": "^2.44.0",
-    "rollup-plugin-vue": "^6.0.0",
+    "@rollup/plugin-commonjs": "^11.1.0",
+    "rollup": "^1.17.0",
+    "rollup-plugin-vue": "^5.0.1",
     "typescript": "^4.2.4",
-    "vue": "^2.6.12",
-    "vue-template-compiler": "^2.6.12"
+    "vue": "^2.6.10",
+    "vue-template-compiler": "^2.6.10"
+  },
+  "dependencies": {
+    "uuid": "^8.3.2"
   }
 }

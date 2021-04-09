@@ -3,15 +3,15 @@
   * 这是一个vue的项目
 
 # 外部参数 #
+  * className:'',
   * loadPoint:[lng, lat]
   * unloadPoint:[lng, lat]
   * loadRule:(distance) => { // distance单位米
     return [{
       type:'province',// 'city', 'district', 'circle',
-      border:true,
-      borderColor:'',
-      borderWidth:'',
-      fill:true,
+      strokeColor:'',
+      strokeWeight:'',
+      fillOpacity:0.4,
       fillColor:'',
       marker:'url',
       markerOffset:[],

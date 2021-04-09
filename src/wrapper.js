@@ -1,10 +1,10 @@
 
-import AmapRoute from './amap-route.vue';
+import component from './amap-route.vue';
 
 export function install(Vue) {
   if(install.installed) return;
   install.installed = true;
-  Vue.component('AmapRoute', AmapRoute);
+  Vue.component('AmapRoute', component);
 }
 
 const plugin = {
@@ -21,4 +21,4 @@ if (typeof window!= 'undefined') {
 if (GlobalVue) {
   GlobalVue.use(plugin);
 }
-export default AmapRoute;
+export default component;
