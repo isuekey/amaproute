@@ -7,14 +7,20 @@
 ## npm ##
   * npm i amap-route
   * somepage.vue 
-    * template: <amap-route :amap="amap" :loadPoint="loadPoint" unloadPoint="unloadPoint"/>
+    * template: 
+    ```
+    <amap-route :amap="amap" :loadPoint="loadPoint" unloadPoint="unloadPoint"/>
+    ```
     * script: import AmapRoute from 'amap-route'
     * vue components: AmapRoute
 
 ## yarn ##
   * yarn add amap-route
   * somepage.vue 
-    * template: <amap-route :amap="amap" :loadPoint="loadPoint" unloadPoint="unloadPoint"/>
+    * template: 
+    ```
+    <amap-route :amap="amap" :loadPoint="loadPoint" unloadPoint="unloadPoint"/>
+    ```
     * script: import AmapRoute from 'amap-route'
     * vue components: AmapRoute
 
