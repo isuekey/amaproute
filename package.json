@@ -1,6 +1,6 @@
 {
   "name": "amap-route",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "使用高德地图预览路线",
   "main": "dist/amap-route.umd.js",
   "module": "dist/amap-route.esm.js",
