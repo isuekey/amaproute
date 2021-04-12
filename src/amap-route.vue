@@ -9,18 +9,62 @@
 
 <script>
 import log from './components/log.vue';
+import loadPointMarker from './assets/address-load.svg';
+import unloadPointMarker from './assets/address-unload.svg';
 import {v4 as uuidv4} from 'uuid';
 
 const tian_an_men = [116.397423,39.909117];
+const pointRule = (distance=0, circleOption, marker) => {
+  if(distance <= 10e3) {
+    return [marker, Object.assign({type:'circle', radius:3000}, circleOption)];
+  } else if (distance <= 30e3) {
+    return [marker, Object.assign({type:'circle', radius:4000}, circleOption)];
+  } else if (distance < 100e3) {
+    return [
+      marker,
+      Object.assign({ type:'district' }, circleOption, {fillOpacity:0.4}),
+      Object.assign({ type:'circle', radius:5000 }, circleOption)
+    ];
+  } else {
+    return [
+      marker,
+      Object.assign({ type:'district' }, circleOption, {fillOpacity:0.4}),
+      Object.assign({ type:'circle', radius:10000 }, circleOption)
+    ];
+  };
+  
+}
 const defaultLoadRule = (distance=0)=>{
-  return [{
-    type:'district'
-  }];
+  const circleOption={
+    fillColor: "#37A80040",
+    strokeColor: "#37A80080",
+    fillOpacity: 0.5, //填充透明度
+    strokeOpacity: 0.5 //线透明度
+  };
+  // console.log('loadPointMarker', loadPointMarker);
+  const marker = {
+    image: URL.createObjectURL(new Blob([loadPointMarker], {type:'image/svg+xml'})),
+    size:[56, 56],
+    offset:[-28, -45],
+    type:'marker',
+  };
+  return pointRule(distance, circleOption, marker);
 };
 const defaultUnloadRule = (distance=0) => {
-  return [{
-    type:'district'
-  }];
+  const circleOption={
+    fillColor: "#E0202040",
+    strokeColor: "#E0202080",
+    fillOpacity: 0.5, //填充透明度
+    strokeOpacity: 0.5 //线透明度
+  };
+  // console.log('unloadPointMarker', unloadPointMarker);
+  const marker = {
+    image: URL.createObjectURL(new Blob([unloadPointMarker], {type:'image/svg+xml'})),
+    size:[56, 56],
+    offset:[-28, -45],
+    type:'marker',
+  };
+  return pointRule(distance, circleOption, marker);
 };
 const prepareMap = (vue) => {
   if(!vue.amapResolve) return Promise.reject('null amap');
@@ -71,7 +115,8 @@ const drawDistrict = (amap, container, point, options={}) => {
         });
         const polygon = new amap.Polygon(districtOption);
         districtMap[key] = polygon;
-        resolve(findRect(bounds));
+        // console.log("boundPoints", boundPoints, bounds);
+        resolve(polygon);
       });
     });
   });
@@ -79,7 +124,7 @@ const drawDistrict = (amap, container, point, options={}) => {
 const circleMap = {};
 const drawCircle = (amap, container, point, options={}) => {
   const key = getKeyOfPoint(point);
-  if(cricleMap[key]) {
+  if(circleMap[key]) {
     container.remove(circleMap[key]);
   };
   const circleOption = Object.assign({}, options, {
@@ -89,26 +134,31 @@ const drawCircle = (amap, container, point, options={}) => {
   const circle = new amap.Circle(circleOption);
   circleMap[key] = circle;
   container.add(circle);
-  return [
-    point.slice(),point.slice(),
-  ];
+  return Promise.resolve(circle);
 };
 
-const findRect = (pointArray=[], rect=[[-Infinity, -Infinity], [Infinity, Infinity]])=> {
-  const leftTop = rect[0].slice();
-  const rightBottom = rect[1].slice();
-  pointArray.forEach(point => {
-    point.forEach((val, idx) => {
-      if(val > leftTop[idx]) {
-        leftTop[idx] = val;
-      }
-      if(val < rightBottom[idx]) {
-        rightBottom[idx] = val;
-      }
-    });
+const markerMap = {};
+const drawMarker = (amap, container, point, options={}) => {
+  const key = getKeyOfPoint(point);
+  if(markerMap[key]) {
+    container.remove(markerMap[key]);
+  };
+  const [w, h] = options.size;
+  const pointIcon = new amap.Icon({
+    image: options.image, size: new amap.Size(w, h), imageSize:new amap.Size(w, h),
   });
-  return [leftTop, rightBottom];
-};
+  const [xo, yo] = options.offset;
+  const pointMarker = new amap.Marker({
+    position: point.slice(),
+    offset: new amap.Pixel(xo, yo),
+    icon:pointIcon,
+    autoRotation:true, 
+    angle:0, extData:key,
+  });
+  markerMap[key] = pointMarker;
+  container.add(pointMarker);
+  return pointMarker;
+}
 const drawPoint = (amap, container, point, pointRule, distance) => {
   const drawTask = pointRule(distance).map(ruleOptions => {
     switch(ruleOptions.type) {
@@ -118,20 +168,17 @@ const drawPoint = (amap, container, point, pointRule, distance) => {
         return drawDistrict(amap, container, point, ruleOptions);
       case "circle":
         return drawCircle(amap, container, point, ruleOptions);
+      case 'marker':
+        return drawMarker(amap, container, point, ruleOptions);
       default:
         return [point, point];
     }
   }) || [[point, point]];
-  return Promise.all(drawTask).then(rectArray => {
-    return rectArray.reduce((sum, cur)=>{
-      sum = findRect(rect, sum);
-      return sum;
-    }, [[-Infinity, -Infinity], [Infinity, Infinity]])
-  })
+  return Promise.all(drawTask);
 };
 
-const zoomMap = (amap, container, loadRect, unloadRect) => {
-  
+const zoomMap = (amap, container, avoid=[20, 20, 20, 20]) => {
+  container.setFitView(null, true, avoid, 18);
 };
 
 const renderTheRoute = (vue) => {
@@ -144,8 +191,8 @@ const renderTheRoute = (vue) => {
     const drawLoad =vue.loadPoint && drawPoint(amap, container, [...vue.loadPoint], vue.loadRule || defaultLoadRule, distance) || [loadPoint, loadPoint];
     const drawUnload = vue.unloadPoint && drawPoint(amap, container, [...vue.unloadPoint], vue.unloadRule || defaultUnloadRule, distance) || [unloadPoint, unloadPoint];
     return Promise.all([amap, container, drawLoad, drawUnload]);
-  }).then(([amap, container, loadRect, unloadRect])=> {
-    return zoomMap(amap, container, loadRect, unloadRect);
+  }).then(([amap, container])=> {
+    return zoomMap(amap, container, vue.avoid);
   });
 }
 export default {
@@ -160,6 +207,9 @@ export default {
     loadRule:Function,
     unloadRule:Function,
     amap:null,
+    avoid:{
+      type:Array, default(){return [20, 20, 20, 20]; },
+    }
   },
   data(){
     // const vue = this;
