@@ -212,20 +212,69 @@
       undefined
     );
 
+  var loadPointMarker = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg width=\"56px\" height=\"56px\" viewBox=\"0 0 56 56\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n  <title>编组 10</title>\n  <g id=\"2020.04.03--地图优化\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\">\n    <g id=\"A4-1--2-运单轨迹-实时轨迹\" transform=\"translate(-747.000000, -654.000000)\">\n      <g id=\"编组-10\" transform=\"translate(747.000000, 654.000000)\">\n        <path d=\"M3.02083333,25.0568182 C1.36397908,25.0568182 0.0208333333,23.7136724 0.0208333333,22.0568182 L0.0208333333,3 C0.0208333333,1.34314575 1.36397908,-1.53269159e-12 3.02083333,-1.53299595e-12 L52.1458333,-1.53299595e-12 C53.8026876,-1.52888557e-12 55.1458333,1.34314575 55.1458333,3 L55.1458333,22.0568182 C55.1458333,23.7136724 53.8026876,25.0568182 52.1458333,25.0568182 L32.5265152,25.0568182 L27.5833333,30 L22.6401515,25.0568182 L3.02083333,25.0568182 Z\" id=\"形状结合\" fill=\"#37A800\"></path>\n        <text id=\"装货地\" font-family=\"PingFang-SC-Heavy, PingFang SC\" font-size=\"14\" font-weight=\"600\" line-spacing=\"13\" letter-spacing=\"-1.07692308\" fill=\"#FFFFFF\">\n          <tspan x=\"8.08333333\" y=\"16.5284091\">装货地</tspan>\n        </text>\n      </g>\n    </g>\n  </g>\n  <g id=\"2020.04.03--地图优化\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\">\n    <g id=\"A4-1--2-运单轨迹-实时轨迹\" transform=\"translate(-764.000000, -689.000000)\" fill-rule=\"nonzero\">\n      <g id=\"编组-15\" transform=\"translate(764.000000, 689.000000)\">\n        <circle id=\"椭圆形\" fill=\"#BBE8A7\" cx=\"28\" cy=\"45\" r=\"11\"></circle>\n        <circle id=\"椭圆形\" fill=\"#37A800\" cx=\"28\" cy=\"45\" r=\"6\"></circle>\n      </g>\n    </g>\n  </g>\n</svg>";
+
+  var unloadPointMarker = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg width=\"56px\" height=\"56px\" viewBox=\"0 0 56 56\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n  <title>编组 10</title>\n  <g id=\"2020.04.03--地图优化\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\">\n    <g id=\"A4-1--2-运单轨迹-实时轨迹\" transform=\"translate(-331.000000, -1026.000000)\">\n      <g id=\"编组-10\" transform=\"translate(331.476117, 1026.748301)\">\n        <path d=\"M3.02083333,25.0568182 C1.36397908,25.0568182 0.0208333333,23.7136724 0.0208333333,22.0568182 L0.0208333333,3 C0.0208333333,1.34314575 1.36397908,-1.53269159e-12 3.02083333,-1.53299595e-12 L52.1458333,-1.53299595e-12 C53.8026876,-1.53330031e-12 55.1458333,1.34314575 55.1458333,3 L55.1458333,22.0568182 C55.1458333,23.7136724 53.8026876,25.0568182 52.1458333,25.0568182 L32.5265152,25.0568182 L27.5833333,30 L22.6401515,25.0568182 L3.02083333,25.0568182 Z\" id=\"形状结合\" fill=\"#E02020\"></path>\n        <text id=\"卸货地\" font-family=\"PingFang-SC-Heavy, PingFang SC\" font-size=\"14\" font-weight=\"600\" line-spacing=\"13\" letter-spacing=\"-1.07692308\" fill=\"#FFFFFF\">\n          <tspan x=\"8.08333333\" y=\"16.5284091\">卸货地</tspan>\n        </text>\n      </g>\n    </g>\n  </g>\n  <g id=\"2020.04.03--地图优化\" stroke=\"none\" stroke-width=\"1\" fill=\"none\" fill-rule=\"evenodd\">\n    <g id=\"A4-1--2-运单轨迹-实时轨迹\" transform=\"translate(-348.000000, -1060.000000)\" fill-rule=\"nonzero\">\n      <g id=\"编组-40\" transform=\"translate(348.000000, 1060.000000)\">\n        <circle id=\"22\" fill=\"#FFA6A6\" cx=\"28\" cy=\"45\" r=\"11\"></circle>\n        <circle id=\"椭圆形备份-12\" fill=\"#E02020\" cx=\"28\" cy=\"45\" r=\"6\"></circle>\n      </g>\n    </g>\n  </g>\n</svg>";
+
   //
 
   var tian_an_men = [116.397423,39.909117];
-  var defaultLoadRule = function (distance){
+  var pointRule = function (distance, circleOption, marker) {
+    if ( distance === void 0 ) distance=0;
 
-    return [{
-      type:'district'
-    }];
+    if(distance <= 10e3) {
+      return [marker, Object.assign({type:'circle', radius:3000}, circleOption)];
+    } else if (distance <= 30e3) {
+      return [marker, Object.assign({type:'circle', radius:4000}, circleOption)];
+    } else if (distance < 100e3) {
+      return [
+        marker,
+        Object.assign({ type:'district' }, circleOption, {fillOpacity:0.4}),
+        Object.assign({ type:'circle', radius:5000 }, circleOption)
+      ];
+    } else {
+      return [
+        marker,
+        Object.assign({ type:'district' }, circleOption, {fillOpacity:0.4}),
+        Object.assign({ type:'circle', radius:10000 }, circleOption)
+      ];
+    }  
+  };
+  var defaultLoadRule = function (distance){
+    if ( distance === void 0 ) distance=0;
+
+    var circleOption={
+      fillColor: "#37A80040",
+      strokeColor: "#37A80080",
+      fillOpacity: 0.5, //填充透明度
+      strokeOpacity: 0.5 //线透明度
+    };
+    // console.log('loadPointMarker', loadPointMarker);
+    var marker = {
+      image: URL.createObjectURL(new Blob([loadPointMarker], {type:'image/svg+xml'})),
+      size:[56, 56],
+      offset:[-28, -45],
+      type:'marker',
+    };
+    return pointRule(distance, circleOption, marker);
   };
   var defaultUnloadRule = function (distance) {
+    if ( distance === void 0 ) distance=0;
 
-    return [{
-      type:'district'
-    }];
+    var circleOption={
+      fillColor: "#E0202040",
+      strokeColor: "#E0202080",
+      fillOpacity: 0.5, //填充透明度
+      strokeOpacity: 0.5 //线透明度
+    };
+    // console.log('unloadPointMarker', unloadPointMarker);
+    var marker = {
+      image: URL.createObjectURL(new Blob([unloadPointMarker], {type:'image/svg+xml'})),
+      size:[56, 56],
+      offset:[-28, -45],
+      type:'marker',
+    };
+    return pointRule(distance, circleOption, marker);
   };
   var prepareMap = function (vue) {
     if(!vue.amapResolve) { return Promise.reject('null amap'); }
@@ -277,7 +326,8 @@
           });
           var polygon = new amap.Polygon(districtOption);
           districtMap[key] = polygon;
-          resolve(findRect(bounds));
+          // console.log("boundPoints", boundPoints, bounds);
+          resolve(polygon);
         });
       });
     });
@@ -287,7 +337,7 @@
     if ( options === void 0 ) options={};
 
     var key = getKeyOfPoint(point);
-    if(cricleMap[key]) {
+    if(circleMap[key]) {
       container.remove(circleMap[key]);
     }  var circleOption = Object.assign({}, options, {
       type:undefined,
@@ -296,27 +346,35 @@
     var circle = new amap.Circle(circleOption);
     circleMap[key] = circle;
     container.add(circle);
-    return [
-      point.slice(),point.slice() ];
+    return Promise.resolve(circle);
   };
 
-  var findRect = function (pointArray, rect){
-    if ( pointArray === void 0 ) pointArray=[];
-    if ( rect === void 0 ) rect=[[-Infinity, -Infinity], [Infinity, Infinity]];
+  var markerMap = {};
+  var drawMarker = function (amap, container, point, options) {
+    if ( options === void 0 ) options={};
 
-    var leftTop = rect[0].slice();
-    var rightBottom = rect[1].slice();
-    pointArray.forEach(function (point) {
-      point.forEach(function (val, idx) {
-        if(val > leftTop[idx]) {
-          leftTop[idx] = val;
-        }
-        if(val < rightBottom[idx]) {
-          rightBottom[idx] = val;
-        }
-      });
+    var key = getKeyOfPoint(point);
+    if(markerMap[key]) {
+      container.remove(markerMap[key]);
+    }  var ref = options.size;
+    var w = ref[0];
+    var h = ref[1];
+    var pointIcon = new amap.Icon({
+      image: options.image, size: new amap.Size(w, h), imageSize:new amap.Size(w, h),
     });
-    return [leftTop, rightBottom];
+    var ref$1 = options.offset;
+    var xo = ref$1[0];
+    var yo = ref$1[1];
+    var pointMarker = new amap.Marker({
+      position: point.slice(),
+      offset: new amap.Pixel(xo, yo),
+      icon:pointIcon,
+      autoRotation:true, 
+      angle:0, extData:key,
+    });
+    markerMap[key] = pointMarker;
+    container.add(pointMarker);
+    return pointMarker;
   };
   var drawPoint = function (amap, container, point, pointRule, distance) {
     var drawTask = pointRule(distance).map(function (ruleOptions) {
@@ -327,20 +385,19 @@
           return drawDistrict(amap, container, point, ruleOptions);
         case "circle":
           return drawCircle(amap, container, point, ruleOptions);
+        case 'marker':
+          return drawMarker(amap, container, point, ruleOptions);
         default:
           return [point, point];
       }
     }) || [[point, point]];
-    return Promise.all(drawTask).then(function (rectArray) {
-      return rectArray.reduce(function (sum, cur){
-        sum = findRect(rect, sum);
-        return sum;
-      }, [[-Infinity, -Infinity], [Infinity, Infinity]])
-    })
+    return Promise.all(drawTask);
   };
 
-  var zoomMap = function (amap, container, loadRect, unloadRect) {
-    
+  var zoomMap = function (amap, container, avoid) {
+    if ( avoid === void 0 ) avoid=[20, 20, 20, 20];
+
+    container.setFitView(null, true, avoid, 18);
   };
 
   var renderTheRoute = function (vue) {
@@ -359,10 +416,8 @@
     }).then(function (ref){
       var amap = ref[0];
       var container = ref[1];
-      var loadRect = ref[2];
-      var unloadRect = ref[3];
 
-      return zoomMap();
+      return zoomMap(amap, container, vue.avoid);
     });
   };
   var script$1 = {
@@ -377,6 +432,9 @@
       loadRule:Function,
       unloadRule:Function,
       amap:null,
+      avoid:{
+        type:Array, default: function default$1(){return [20, 20, 20, 20]; },
+      }
     },
     data: function data(){
       // const vue = this;
