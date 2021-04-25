@@ -15,9 +15,9 @@
   "scripts": {
     "build": "npm run build:umd & npm run build:es & npm run build:unpkg",
     "build:umd": "rollup --config build/rollup.config.js --format umd --file dist/amap-route.umd.js",
-    "build:es": "rollup --config build/rollup.config.js --format es --file dist/amap-route.esm.js",
+    "build:es": "rollup --config build/rollup.config.js --format esm --file dist/amap-route.esm.js",
     "build:unpkg": "rollup --config build/rollup.config.js --format iife --file dist/amap-route.min.js",
-    "tsc": "tsc"
+    "tsc": "tsc",
   },
   "devDependencies": {
     "@rollup/plugin-buble": "^0.21.3",
