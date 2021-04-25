@@ -11,7 +11,7 @@
 import log from './components/log.vue';
 import loadPointMarker from './assets/address-load.svg';
 import unloadPointMarker from './assets/address-unload.svg';
-import {v4 as uuidv4} from 'uuid';
+import {uuid as uuidv4} from 'simple-uuidv4';
 
 const tian_an_men = [116.397423,39.909117];
 const pointRule = (distance=0, circleOption, marker) => {
